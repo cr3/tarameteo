@@ -67,7 +67,7 @@ bool HttpClient::createJsonPayload(const WeatherData& data, char* buffer, size_t
     doc["humidity"] = round(data.humidity * 10.0f) / 10.0f;
     doc["altitude"] = round(data.altitude * 10.0f) / 10.0f;
     doc["rssi"] = data.rssi;
-    doc["timestamp"] = millis();
+    doc["timestamp"] = data.timestamp;  // Use the timestamp from WeatherData
     doc["retry_count"] = _retryCount;
     
     return serializeJson(doc, buffer, size) > 0;

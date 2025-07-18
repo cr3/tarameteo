@@ -1,0 +1,12 @@
+[submodule "firmware/lib/Adafruit_BME280"]
+	path = firmware/lib/Adafruit_BME280
+	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+[submodule "firmware/lib/Adafruit_BusIO"]
+	path = firmware/lib/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO.git
+[submodule "firmware/lib/Adafruit_Sensor"]
+	path = firmware/lib/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "firmware/lib/ArduinoJson"]
+	path = firmware/lib/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git

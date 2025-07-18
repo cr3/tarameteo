@@ -11,6 +11,7 @@ struct WeatherData {
     float humidity;
     float altitude;
     int rssi;
+    unsigned long timestamp;  // Unix timestamp
 };
 
 class HttpClient {

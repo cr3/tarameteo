@@ -2,8 +2,8 @@
 #define CONFIG_H
 
 // WiFi Configuration
-#define WIFI_SSID            "DDFF"
-#define WIFI_PASSWORD        "sallysoso"
+#define WIFI_SSID            "your-wifi-ssid"
+#define WIFI_PASSWORD        "your-wifi-password"
 
 // Server Configuration
 #define HTTP_SERVER         "your-server.com"
@@ -18,6 +18,10 @@
 #define SEA_LEVEL_PRESSURE  1015.0f  // hPa, adjust for your location
 
 // Power Management
-#define SLEEP_DURATION      60     // Deep sleep duration in seconds (1 minute)
+#define SLEEP_DURATION      3600     // Deep sleep duration in seconds (1 hour)
+
+// Time Management Configuration
+#define NTP_TIMEOUT_MS      10000  // 10 seconds timeout for NTP sync
+#define NTP_SYNC_INTERVAL_MS 86400000  // 24 hours between syncs (86400000 ms = 24 hours)
 
 #endif 

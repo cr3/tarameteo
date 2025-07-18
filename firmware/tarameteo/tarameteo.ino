@@ -6,6 +6,7 @@
  * - WiFi connectivity with auto-reconnect
  * - Secure HTTPS data transmission
  * - Sensor data validation
+ * - NTP time synchronization for accurate timestamps
  */
 
 #include <esp_sleep.h>
@@ -14,11 +15,13 @@
 #include "WiFiManager.h"
 #include "HttpClient.h"
 #include "PowerManager.h"
+#include "TimeManager.h"
 
 BME280Sensor sensor(BME280_ADDRESS, BME280_SDA, BME280_SCL, SEA_LEVEL_PRESSURE);
 WiFiManager wifiManager(WIFI_SSID, WIFI_PASSWORD);
 HttpClient httpClient(HTTP_SERVER, HTTP_PORT, HTTP_USE_HTTPS, API_KEY);
 PowerManager powerManager(SLEEP_DURATION);
+TimeManager timeManager(NTP_TIMEOUT_MS, NTP_SYNC_INTERVAL_MS);
 
 void printStatus(const char* component, bool success, const char* error = nullptr) {
     Serial.print(component);
@@ -58,6 +61,29 @@ void setup() {
     }
     printStatus("WiFi Connection", true);
     Serial.printf("Connected to %s (IP: %s)\n", WIFI_SSID, wifiManager.getIP());
+    
+    // Initialize time manager
+    if (!timeManager.begin()) {
+        printStatus("Time Manager", false, timeManager.getLastError());
+        powerManager.sleep();
+    }
+    printStatus("Time Manager", true);
+    
+    // Sync time with NTP servers
+    Serial.println("Synchronizing time with NTP servers...");
+    if (!timeManager.syncTime()) {
+        printStatus("Time Sync", false, timeManager.getLastError());
+        Serial.println("Warning: Using device uptime for timestamps");
+    } else {
+        printStatus("Time Sync", true);
+        Serial.printf("Current timestamp: %lu\n", timeManager.getCurrentTimestamp());
+        
+        // Display formatted time
+        char timeString[32];
+        if (timeManager.getFormattedTime(timeString, sizeof(timeString))) {
+            Serial.printf("Current time: %s\n", timeString);
+        }
+    }
     
     // Initialize HTTP client
     if (!httpClient.begin()) {
@@ -108,7 +134,8 @@ void loop() {
         sensor.getPressure(),
         sensor.getHumidity(),
         sensor.getAltitude(),
-        wifiManager.getRSSI()
+        wifiManager.getRSSI(),
+        timeManager.getCurrentTimestamp()
     };
     
     // Print sensor readings
@@ -118,6 +145,15 @@ void loop() {
     Serial.printf("Humidity: %.1f%%\n", data.humidity);
     Serial.printf("Altitude: %.1f m\n", data.altitude);
     Serial.printf("WiFi RSSI: %d dBm\n", data.rssi);
+    Serial.printf("Timestamp: %lu\n", data.timestamp);
+    
+    // Display formatted time if available
+    if (timeManager.isTimeSynced()) {
+        char timeString[32];
+        if (timeManager.getFormattedTime(timeString, sizeof(timeString))) {
+            Serial.printf("Time: %s\n", timeString);
+        }
+    }
     
     // Post data to server
     Serial.println("\nPosting data to server...");
