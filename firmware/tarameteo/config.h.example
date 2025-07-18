@@ -1,0 +1,23 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// WiFi Configuration
+#define WIFI_SSID            "DDFF"
+#define WIFI_PASSWORD        "sallysoso"
+
+// Server Configuration
+#define HTTP_SERVER         "your-server.com"
+#define HTTP_PORT           443
+#define HTTP_USE_HTTPS      true
+#define API_KEY             "your-api-key"
+
+// Sensor Configuration
+#define BME280_ADDRESS      0x77    // I2C address of BME280 sensor
+#define BME280_SDA          6       // SDA pin for BME280
+#define BME280_SCL          7       // SCL pin for BME280
+#define SEA_LEVEL_PRESSURE  1015.0f  // hPa, adjust for your location
+
+// Power Management
+#define SLEEP_DURATION      60     // Deep sleep duration in seconds (1 minute)
+
+#endif 

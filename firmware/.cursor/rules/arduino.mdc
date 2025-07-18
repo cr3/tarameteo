@@ -1,0 +1,9 @@
+---
+description: 
+globs: **/.cpp, **/.h, **/.ino
+---
+- This is an Arduino project.
+- The microcontroller is a Seeed Studio ESP32-S3.
+- The sensor is a DFRobot BME280.
+- The libraries are installed as git submodules under lib/.
+- The sketch file is firmware/firmware.ino.
