@@ -1,0 +1,96 @@
+"""Service fixtures."""
+
+from functools import partial
+from pathlib import Path
+
+import pytest
+
+from tarameteo.testing.compose import ComposeServer
+
+
+@pytest.fixture(scope="session")
+def project():
+    return "test"
+
+
+@pytest.fixture(scope="session")
+def env_vars(project):
+    """Environment variables for the services.
+
+    Static because they are persisted in volumes, e.g. mysql-vol-1.
+    """
+    return {
+        "COMPOSE_PROJECT_NAME": project,
+        "DBDRIVER": "mysql",
+        "DBNAME": "test",
+        "DBUSER": "test",
+        "DBPASS": "test",
+        "DBROOT": "test",
+    }
+
+@pytest.fixture(scope="session")
+def env_file(env_vars, request):
+    """Environment file containing `env_vars`.
+
+    Cached for troubleshooting purposes.
+    """
+    env_file = request.config.cache.makedir("compose") / "env"
+    with env_file.open("w") as f:
+        for k, v in env_vars.items():
+            f.write(f"{k}={v}\n")
+
+    return env_file
+
+
+@pytest.fixture(scope="session")
+def compose_files(request):
+    directory = Path(request.config.rootdir)
+    filenames = ["docker-compose.yml", "compose.yaml", "compose.yml"]
+    while True:
+        for filename in filenames:
+            path = directory / filename
+            if path.exists():
+                all_files = directory.glob(f"{path.stem}.*")
+                ordered_files = sorted(all_files, key=lambda p: len(p.name))
+                return list(ordered_files)
+
+        if directory == directory.parent:
+            raise KeyError("Docker compose file not found")
+
+        directory = directory.parent
+
+
+@pytest.fixture(scope="session")
+def compose_server(project, env_file, compose_files, process):
+    return partial(
+        ComposeServer,
+        project=project,
+        env_file=env_file,
+        compose_files=compose_files,
+        process=process,
+    )
+
+
+@pytest.fixture(scope="session")
+def api_service(compose_server):
+    """API service fixture."""
+    server = compose_server("Uvicorn running on")
+    with server.run("api") as service:
+        yield service
+
+
+@pytest.fixture(scope="session")
+def frontend_service(compose_server):
+    """Frontend service fixture."""
+    server = compose_server("ready")
+    with server.run("frontend") as service:
+        yield service
+
+
+@pytest.fixture(scope="session")
+def mysql_service(compose_server):
+    """MySQL service fixture."""
+    server = compose_server("mariadbd: ready for connections")
+    with server.run("mysql") as service:
+        yield service
+

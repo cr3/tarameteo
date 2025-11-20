@@ -1,0 +1,8 @@
+*
+!*.rst
+!alembic*
+!docs
+!log-config.*
+!pyproject.toml
+!poetry.lock
+!tarameteo

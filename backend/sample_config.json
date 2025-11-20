@@ -1,0 +1,23 @@
+{
+    "api-url": "http://localhost:8000/api",
+    "sensor-name": "baz",
+    "api-key": "q6PEnzMq9iZItyhRthX2K3FKKFBfADXc-Ny6uflD868",
+    "interval": 60,
+    "duration": 24,
+    "start-time": "2024-01-01 00:00:00",
+    "weather": {
+        "base-temperature": 20.0,
+        "base-humidity": 60.0,
+        "base-pressure": 1013.25,
+        "base-altitude": 100.0,
+        "base-rssi": -50,
+        "temperature-variation": 5.0,
+        "humidity-variation": 20.0,
+        "pressure-variation": 10.0,
+        "altitude-variation": 5.0,
+        "rssi-variation": 15,
+        "trend-duration-hours": 6,
+        "use-unix-timestamp": true
+    },
+    "comment": "Updated to support new weather data fields: altitude, rssi, retry_count. Uses Unix timestamps to match firmware format."
+} 

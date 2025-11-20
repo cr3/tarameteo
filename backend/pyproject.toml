@@ -1,0 +1,151 @@
+[project]
+name = "tarameteo"
+version = "0.0.0"
+description = "Weather station API"
+authors = [
+    {name = "Marc Tardif", email = "marc@interunion.ca"},
+]
+readme = "README.rst"
+repository = "https://github.com/cr3/tarameteo"
+packages = [
+    {include = "tarameteo"},
+]
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "alembic>=1.13.0",
+    "attrs>=23.2.0",
+    "bcrypt (>=4.3.0,<5.0.0)",
+    "fastapi>=0.109.0",
+    "more-itertools (>=10.7.0,<11.0.0)",
+    "mysqlclient (>=2.2.7,<3.0.0)",
+    "pydantic>=2.6.0",
+    "sqlalchemy>=2.0.0",
+    "uvicorn[standard] (>=0.34.0,<1.0.0)",
+    "configargparse (>=1.7.1,<2.0.0)",
+]
+
+[tool.poetry.group.test.dependencies]
+coverage = "^7.2.3"
+httpx = "^0.28.1"
+hypothesis = "^6.135.4"
+pyhamcrest = "^2.1.0"
+pytest = "^8.4.0"
+pytest-asyncio = "^1.0.0"
+pytest-unique = "^0.1.5"
+pytest-xdocker = "^0.2.5"
+responses = "^0.25.7"
+
+[tool.poetry.group.check]
+optional = true
+
+[tool.poetry.group.check.dependencies]
+ruff = "^0.14.5"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^6.1.3"
+sphinxcontrib-log-cabinet = "^1.0.1"
+sphinx-rtd-theme = "^1.2.0"
+
+[project.entry-points."pytest11"]
+tarameteo = "tarameteo.testing.fixtures"
+tarameteo-db = "tarameteo.testing.db"
+tarameteo-managers = "tarameteo.testing.managers"
+tarameteo-services = "tarameteo.testing.services"
+
+[project.entry-points."pytest_unique"]
+db-model = "tarameteo.testing.unique:unique_db_model"
+db-value = "tarameteo.testing.unique:unique_db_value"
+
+[project.scripts]
+tarameteo = "tarameteo.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+fix = true
+
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+    # Create your own exception
+    "TRY002",
+    # Avoid specifying long messages outside the exception class
+    "TRY003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]  # Ignore assert statements in test files
+
+# Pytest options:
+#   https://docs.pytest.org/en/6.2.x/reference.html#ini-options-ref
+[tool.pytest.ini_options]
+addopts = [
+    "--doctest-modules",
+    "--doctest-glob=*.rst",
+]
+testpaths = [
+    "tarameteo",
+    "docs",
+    "tests",
+]
+
+# Coverage options:
+#   https://coverage.readthedocs.io/en/latest/config.html
+[tool.coverage.paths]
+source = [
+    "tarameteo",
+    "*/*/site-packages",
+]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = [
+    "tarameteo",
+]
