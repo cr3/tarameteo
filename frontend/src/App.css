@@ -1,0 +1,608 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* App Layout */
+.App {
+  text-align: left;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.timezone-info {
+  margin-top: 0.5rem;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.App-main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Controls */
+.controls {
+  margin-bottom: 2rem;
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+}
+
+.controls-header h2 {
+  margin: 0;
+  color: #1565c0;
+  font-size: 1.5rem;
+}
+
+.control-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.share-btn, .reset-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.share-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.reset-btn {
+  background: #ff9800;
+  color: white;
+}
+
+.reset-btn:hover {
+  background: #f57c00;
+  transform: translateY(-1px);
+}
+
+.share-btn:active, .reset-btn:active {
+  transform: translateY(0);
+}
+
+.url-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.url-status small {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.url-status strong {
+  color: #495057;
+}
+
+.url-updating {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.url-ready {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.websocket-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+}
+
+.websocket-status small {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.websocket-status strong {
+  color: #2e7d32;
+}
+
+.ws-connected {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.ws-error {
+  color: #c62828;
+  font-weight: 500;
+}
+
+.ws-connecting {
+  color: #f57c00;
+  font-weight: 500;
+}
+
+.websocket-status label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #2e7d32;
+}
+
+.websocket-status input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.url-preview {
+  margin-bottom: 1.5rem;
+}
+
+.url-preview details {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+.url-preview summary {
+  padding: 0.75rem;
+  background: #e9ecef;
+  cursor: pointer;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+  user-select: none;
+}
+
+.url-preview summary:hover {
+  background: #dee2e6;
+}
+
+.url-preview summary:focus {
+  outline: none;
+  background: #007bff;
+  color: white;
+}
+
+.preview-content {
+  padding: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.preview-params {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: #e3f2fd;
+  border-radius: 4px;
+  border: 1px solid #bbdefb;
+}
+
+.preview-param {
+  margin: 0.5rem 0;
+  color: #1565c0;
+}
+
+.preview-param strong {
+  color: #0d47a1;
+}
+
+.preview-note {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.sensor-selector h2,
+.date-range h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #495057;
+  font-size: 1.3rem;
+}
+
+.sensor-selector,
+.date-range {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.sensor-instructions {
+  margin: 0 0 1rem 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.sensor-input-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sensor-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-sensor-btn {
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.add-sensor-btn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.add-sensor-btn:active:not(:disabled) {
+  background: #004085;
+}
+
+.add-sensor-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.selected-sensors h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #333;
+  font-size: 1rem;
+}
+
+.no-sensors {
+  color: #666;
+  font-style: italic;
+  margin: 0;
+}
+
+.sensor-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sensor-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #1976d2;
+}
+
+.remove-sensor-btn {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.remove-sensor-btn:hover {
+  background: #bbdefb;
+}
+
+.debug-controls {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.debug-btn {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.debug-btn:hover {
+  background: #5a6268;
+}
+
+.date-range {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.date-range h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #495057;
+}
+
+.date-instructions {
+  margin-bottom: 1rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.date-inputs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-inputs > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-inputs label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.date-inputs input[type="datetime-local"] {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  min-width: 200px;
+}
+
+.date-inputs input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.utc-info {
+  padding: 0.75rem;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 4px;
+  color: #1565c0;
+  font-family: monospace;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.utc-info strong {
+  color: #0d47a1;
+}
+
+.timezone-debug {
+  margin-top: 1rem;
+}
+
+.timezone-debug details {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+.timezone-debug summary {
+  padding: 0.75rem;
+  background: #e9ecef;
+  cursor: pointer;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+  user-select: none;
+}
+
+.timezone-debug summary:hover {
+  background: #dee2e6;
+}
+
+.timezone-debug summary:focus {
+  outline: none;
+  background: #007bff;
+  color: white;
+}
+
+.debug-content {
+  padding: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.debug-content p {
+  margin: 0.5rem 0;
+  color: #495057;
+}
+
+.debug-content strong {
+  color: #212529;
+}
+
+/* Sensor Statistics */
+.sensor-statistics {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.sensor-statistics h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Charts */
+.charts {
+  display: grid;
+  gap: 2rem;
+}
+
+.chart-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Error and Loading States */
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
