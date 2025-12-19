@@ -1,0 +1,89 @@
+x-build-args: &backend-build-args
+  PYTHON_VERSION: ${PYTHON_VERSION:-3.13.10}
+name: tarameteo
+
+services:
+  api:
+    build:
+      context: backend
+      args:
+        <<: *backend-build-args
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - mysql-socket-vol-1:/run/mysqld/
+    environment:
+      - DBDRIVER=mysql
+      - DBNAME=${DBNAME}
+      - DBUSER=${DBUSER}
+      - DBPASS=${DBPASS}
+    command: >
+      bash -c "alembic upgrade head && uvicorn --host=0.0.0.0 --port=80 tarameteo.api:app --log-config=/app/log-config.yaml"
+    restart: always
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import socket; import sys; s=socket.socket(); s.settimeout(1); sys.exit(s.connect_ex(('localhost',80))>0)" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+
+  frontend:
+    build:
+      context: frontend
+      target: prod
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+    restart: always
+ 
+  mysql:
+    image: mariadb:12.1
+    volumes:
+      - ./mysql/conf.d/:/etc/mysql/conf.d/:ro,Z
+      - mysql-vol-1:/var/lib/mysql/
+      - mysql-socket-vol-1:/run/mysqld/
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DBROOT}
+      - MYSQL_DATABASE=${DBNAME}
+      - MYSQL_USER=${DBUSER}
+      - MYSQL_PASSWORD=${DBPASS}
+      - MYSQL_INITDB_SKIP_TZINFO=1
+    ports:
+      - '${SQL_PORT:-127.0.0.1:13306}:3306'
+    restart: always
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+    user: mysql
+    stop_grace_period: 45s
+
+  nginx:
+    build: nginx
+    depends_on:
+      api:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/:z
+    environment:
+      - SERVER_HOSTNAME=${SERVER_HOSTNAME}
+      - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+    ports:
+      - '${HTTP_BIND:-}:${HTTP_PORT:-80}:80'
+    restart: always
+    dns:
+      - ${IPV4_NETWORK:-172.22.1}.254
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${IPV4_NETWORK:-172.22.1}.0/24
+
+volumes:
+  mysql-vol-1:
+  mysql-socket-vol-1:
