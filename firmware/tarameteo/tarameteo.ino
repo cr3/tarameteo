@@ -1,25 +1,27 @@
 /*
  * TaraMeteo Firmware
  * Weather station using XIAO_ESP32S3 and BME280 sensor
+ *
  * Features:
  * - Deep sleep power management
  * - WiFi connectivity with auto-reconnect
- * - Secure HTTPS data transmission
+ * - Secure MQTTS (MQTT over TLS) support
  * - Sensor data validation
  * - NTP time synchronization for accurate timestamps
+ * - Last Will and Testament for offline detection
  */
 
 #include <esp_sleep.h>
 #include "config.h"
 #include "BME280Sensor.h"
 #include "WiFiManager.h"
-#include "HttpClient.h"
+#include "MqttClient.h"
 #include "PowerManager.h"
 #include "TimeManager.h"
 
 BME280Sensor sensor(BME280_ADDRESS, BME280_SDA, BME280_SCL, SEA_LEVEL_PRESSURE);
 WiFiManager wifiManager(WIFI_SSID, WIFI_PASSWORD);
-HttpClient httpClient(HTTP_SERVER, HTTP_PORT, HTTP_USE_HTTPS, API_KEY);
+MqttClient mqttClient(MQTT_SERVER, MQTT_PORT, MQTT_USE_TLS, API_KEY, SENSOR_NAME);
 PowerManager powerManager(SLEEP_DURATION);
 TimeManager timeManager(NTP_TIMEOUT_MS, NTP_SYNC_INTERVAL_MS);
 
@@ -36,39 +38,42 @@ void printStatus(const char* component, bool success, const char* error = nullpt
 void setup() {
     Serial.begin(115200);
     delay(1000);  // Give serial connection time to start
-    
+
     Serial.println("\n=== TaraMeteo Weather Station ===");
+    Serial.printf("Sensor: %s\n", SENSOR_NAME);
     Serial.println("Initializing components...");
-    
+
     // Initialize sensor
     if (!sensor.begin()) {
         printStatus("BME280 Sensor", false, sensor.getLastError());
         powerManager.sleep();
     }
     printStatus("BME280 Sensor", true);
-    
+
     // Initialize WiFi
     if (!wifiManager.begin()) {
         printStatus("WiFi Manager", false, wifiManager.getLastError());
         powerManager.sleep();
     }
     printStatus("WiFi Manager", true);
-    
+
     // Connect to WiFi
+    Serial.println("Connecting to WiFi...");
     if (!wifiManager.connect()) {
         printStatus("WiFi Connection", false, wifiManager.getLastError());
         powerManager.sleep();
     }
     printStatus("WiFi Connection", true);
     Serial.printf("Connected to %s (IP: %s)\n", WIFI_SSID, wifiManager.getIP());
-    
+    Serial.printf("WiFi RSSI: %d dBm\n", wifiManager.getRSSI());
+
     // Initialize time manager
     if (!timeManager.begin()) {
         printStatus("Time Manager", false, timeManager.getLastError());
         powerManager.sleep();
     }
     printStatus("Time Manager", true);
-    
+
     // Sync time with NTP servers
     Serial.println("Synchronizing time with NTP servers...");
     if (!timeManager.syncTime()) {
@@ -77,32 +82,46 @@ void setup() {
     } else {
         printStatus("Time Sync", true);
         Serial.printf("Current timestamp: %lu\n", timeManager.getCurrentTimestamp());
-        
+
         // Display formatted time
         char timeString[32];
         if (timeManager.getFormattedTime(timeString, sizeof(timeString))) {
             Serial.printf("Current time: %s\n", timeString);
         }
     }
-    
-    // Initialize HTTP client
-    if (!httpClient.begin()) {
-        printStatus("HTTP Client", false, httpClient.getLastError());
+
+    // Initialize MQTT client
+    if (!mqttClient.begin()) {
+        printStatus("MQTT Client", false, mqttClient.getLastError());
         powerManager.sleep();
     }
-    printStatus("HTTP Client", true);
-    
+    printStatus("MQTT Client", true);
+
+    // Set CA certificate for TLS if configured
+#ifdef MQTT_CA_CERT
+    mqttClient.setCACert(MQTT_CA_CERT);
+#endif
+
+    // Connect to MQTT broker
+    Serial.println("Connecting to MQTT broker...");
+    if (!mqttClient.connect()) {
+        printStatus("MQTT Connection", false, mqttClient.getLastError());
+        // Continue anyway - will retry in loop
+    } else {
+        printStatus("MQTT Connection", true);
+        Serial.printf("Connected to %s:%d\n", MQTT_SERVER, MQTT_PORT);
+    }
+
     // Initialize power management
     if (!powerManager.begin()) {
         printStatus("Power Manager", false, powerManager.getLastError());
         powerManager.sleep();
     }
     printStatus("Power Manager", true);
-    
+
     Serial.println("All components initialized successfully");
-    Serial.print("Sleep duration: ");
-    Serial.print(SLEEP_DURATION);
-    Serial.println(" seconds");
+    Serial.printf("Sleep duration: %d seconds (%.1f minutes)\n",
+                 SLEEP_DURATION, SLEEP_DURATION / 60.0);
     Serial.println("Starting main loop...\n");
 }
 
@@ -112,22 +131,22 @@ void loop() {
         printStatus("Sensor Check", false, sensor.getLastError());
         powerManager.sleep();
     }
-    
+
     // Check WiFi connection
     if (!wifiManager.isConnected()) {
         Serial.println("WiFi disconnected, attempting to reconnect...");
         if (!wifiManager.reconnect()) {
             printStatus("WiFi Reconnect", false, wifiManager.getLastError());
-            Serial.printf("Reconnect attempts: %d/%d\n", 
-                         wifiManager.getReconnectAttempts(), 
+            Serial.printf("Reconnect attempts: %d/%d\n",
+                         wifiManager.getReconnectAttempts(),
                          WiFiManager::MAX_RECONNECT_ATTEMPTS);
             powerManager.sleep();
         }
         printStatus("WiFi Reconnect", true);
-        Serial.printf("Reconnected to %s (IP: %s)\n", 
+        Serial.printf("Reconnected to %s (IP: %s)\n",
                      WIFI_SSID, wifiManager.getIP());
     }
-    
+
     // Read sensor data
     WeatherData data = {
         sensor.getTemperature(),
@@ -135,9 +154,10 @@ void loop() {
         sensor.getHumidity(),
         sensor.getAltitude(),
         wifiManager.getRSSI(),
-        timeManager.getCurrentTimestamp()
+        timeManager.getCurrentTimestamp(),
+        0  // retryCount will be updated by MQTT client
     };
-    
+
     // Print sensor readings
     Serial.println("Sensor Readings:");
     Serial.printf("Temperature: %.1f°C\n", data.temperature);
@@ -146,7 +166,7 @@ void loop() {
     Serial.printf("Altitude: %.1f m\n", data.altitude);
     Serial.printf("WiFi RSSI: %d dBm\n", data.rssi);
     Serial.printf("Timestamp: %lu\n", data.timestamp);
-    
+
     // Display formatted time if available
     if (timeManager.isTimeSynced()) {
         char timeString[32];
@@ -154,19 +174,27 @@ void loop() {
             Serial.printf("Time: %s\n", timeString);
         }
     }
-    
-    // Post data to server
-    Serial.println("\nPosting data to server...");
-    if (!httpClient.postWeatherData(data)) {
-        printStatus("Data Post", false, httpClient.getLastError());
-        Serial.printf("Retry count: %d/%d\n", 
-                     httpClient.getRetryCount(), 
-                     HttpClient::MAX_RETRIES);
+
+    // Publish data to MQTT broker
+    Serial.println("\nPublishing data to MQTT broker...");
+    if (!mqttClient.publishWeatherData(data)) {
+        printStatus("Data Publish", false, mqttClient.getLastError());
+        Serial.printf("Retry count: %d/%d\n",
+                     mqttClient.getRetryCount(),
+                     MqttClient::MAX_RETRIES);
+
+        // Store retry count for next attempt
+        data.retryCount = mqttClient.getRetryCount();
     } else {
-        printStatus("Data Post", true);
+        printStatus("Data Publish", true);
+        Serial.printf("Data published successfully to topic: weather/%s\n", SENSOR_NAME);
     }
-    
-    // Enter deep sleep regardless of post status
-    Serial.println("Entering deep sleep...\n");
+
+    // Disconnect from MQTT (reduces power consumption during sleep)
+    mqttClient.disconnect();
+
+    // Enter deep sleep regardless of publish status
+    Serial.printf("Entering deep sleep for %d seconds...\n", SLEEP_DURATION);
+    Serial.println("=====================================\n");
     powerManager.sleep();
 }

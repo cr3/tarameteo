@@ -5,23 +5,40 @@
 #define WIFI_SSID            "your-wifi-ssid"
 #define WIFI_PASSWORD        "your-wifi-password"
 
-// Server Configuration
-#define HTTP_SERVER         "your-server.com"
-#define HTTP_PORT           443
-#define HTTP_USE_HTTPS      true
-#define API_KEY             "your-api-key"
+// MQTT Broker Configuration
+#define MQTT_SERVER         "your-mqtt-broker.com"  // or "192.168.1.100"
+#define MQTT_PORT           1883  // or 8883
+#define MQTT_USE_TLS        false
 
 // Sensor Configuration
-#define BME280_ADDRESS      0x77    // I2C address of BME280 sensor
+#define SENSOR_NAME         "station-01"
+#define API_KEY             "your-api-key-here"
+
+// BME280 I2C Configuration
+#define BME280_ADDRESS      0x77    // I2C address: 0x76 or 0x77
 #define BME280_SDA          6       // SDA pin for BME280
 #define BME280_SCL          7       // SCL pin for BME280
-#define SEA_LEVEL_PRESSURE  1015.0f  // hPa, adjust for your location
+#define SEA_LEVEL_PRESSURE  1013.25f  // hPa (standard sea level pressure)
 
 // Power Management
 #define SLEEP_DURATION      3600     // Deep sleep duration in seconds (1 hour)
 
-// Time Management Configuration
+// Time Management (NTP)
 #define NTP_TIMEOUT_MS      10000  // 10 seconds timeout for NTP sync
 #define NTP_SYNC_INTERVAL_MS 86400000  // 24 hours between syncs (86400000 ms = 24 hours)
 
-#endif 
+// TLS/SSL Certificate
+// #define MQTT_CA_CERT \
+// "-----BEGIN CERTIFICATE-----\n" \
+// "MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\n" \
+// "...\n" \
+// "-----END CERTIFICATE-----\n"
+
+// Advanced Settings
+#define WIFI_TIMEOUT_MS     30000  // 30 seconds
+#define WIFI_MAX_RETRIES    3
+
+#define MQTT_KEEPALIVE      60
+#define MQTT_TIMEOUT_MS     10000  // 10 seconds
+
+#endif // CONFIG_H
