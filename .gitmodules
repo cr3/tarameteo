@@ -10,3 +10,6 @@
 [submodule "firmware/lib/ArduinoJson"]
 	path = firmware/lib/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "firmware/lib/PubSubClient"]
+	path = firmware/lib/PubSubClient
+	url = https://github.com/knolleary/pubsubclient.git
