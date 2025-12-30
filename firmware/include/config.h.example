@@ -1,0 +1,28 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// MQTT Broker Configuration
+#define MQTT_SERVER         "meteo.taram.ca"
+#define MQTT_PORT           8883
+
+// BME280 I2C Configuration
+#define BME280_ADDRESS      0x77    // I2C address: 0x76 or 0x77
+#define BME280_SDA          6       // SDA pin for BME280
+#define BME280_SCL          7       // SCL pin for BME280
+#define SEA_LEVEL_PRESSURE  1013.25f  // hPa (standard sea level pressure)
+
+// Power Management
+#define SLEEP_DURATION      3600     // Deep sleep duration in seconds (1 hour)
+
+// Time Management (NTP)
+#define NTP_TIMEOUT_MS      10000  // 10 seconds timeout for NTP sync
+#define NTP_SYNC_INTERVAL_MS 86400000  // 24 hours between syncs (86400000 ms = 24 hours)
+
+// Advanced Settings
+#define WIFI_TIMEOUT_MS     30000  // 30 seconds
+#define WIFI_MAX_RETRIES    3
+
+#define MQTT_KEEPALIVE      60
+#define MQTT_TIMEOUT_MS     10000  // 10 seconds
+
+#endif // CONFIG_H
