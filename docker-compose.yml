@@ -27,6 +27,28 @@ services:
       timeout: 5s
       retries: 15
 
+  mosquitto:
+    build: mosquitto
+    depends_on:
+      certbot:
+        condition: service_healthy
+    volumes:
+      - certbot-certs:/etc/letsencrypt:ro
+      - mosquitto-data:/mosquitto/data
+      - ./mosquitto/mosquitto.tpl:/mosquitto.tpl
+    environment:
+      - MQTT_USERNAME=${MQTT_USERNAME:-admin}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - MOSQUITTO_TEMPLATE=/mosquitto.tpl
+    ports:
+      - '${MQTT_PORT:-1883}:1883'
+      - '${MQTTS_PORT:-8883}:8883'
+    networks:
+      default:
+        aliases:
+          - tarameteo-mosquitto
+    restart: always
+
 networks:
   default:
     driver: bridge
@@ -38,3 +60,4 @@ networks:
 volumes:
   certbot-certs:
   certbot-www:
+  mosquitto-data:
