@@ -3,6 +3,14 @@
   "extends": [
     "config:recommended"
   ],
+  "packageRules": [
+    {
+      "description": "Block Python 3.14 until dependencies have wheels",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["python"],
+      "allowedVersions": "!/^3\\.14/"
+    }
+  ],
   "automerge": true,
   "automergeType": "pr",
   "automergeStrategy": "squash",

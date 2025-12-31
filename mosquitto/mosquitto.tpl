@@ -33,7 +33,7 @@ protocol mqtt
 listener 8883
 protocol mqtt
 
-cafile /etc/ssl/certs/ca-certificates.crt
+cafile /etc/mosquitto/pki/ca.crt
 certfile ${MOSQUITTO_CONFIG_DIR}/certs/cert.pem
 keyfile ${MOSQUITTO_CONFIG_DIR}/certs/key.pem
 
@@ -41,12 +41,11 @@ keyfile ${MOSQUITTO_CONFIG_DIR}/certs/key.pem
 # Security
 # =============================================================================
 
-allow_anonymous false
 require_certificate true
 use_identity_as_username true
 
-plugin /usr/lib/mosquitto_dynamic_security.so
-plugin_opt_config_file ${MOSQUITTO_DATA_DIR}/dynamic-security.json
+allow_anonymous false
+acl_file ${MOSQUITTO_CONFIG_DIR}/acl.conf
 
 # =============================================================================
 # Performance & Limits

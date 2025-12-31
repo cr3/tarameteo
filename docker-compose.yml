@@ -1,6 +1,32 @@
+x-build-args: &python-build-args
+  PYTHON_VERSION: ${PYTHON_VERSION:-3.13.10}
 name: tarameteo
 
 services:
+  api:
+    build:
+      context: backend
+      args:
+        <<: *python-build-args
+    depends_on:
+      issuer:
+        condition: service_healthy
+    command: >
+      bash -c "uvicorn --host=0.0.0.0 --port=80 tarameteo.api:app --log-config=/app/log-config.yaml"
+    environment:
+      - ISSUER_URL=http://tarameteo-issuer
+      - ISSUER_TOKEN=${ISSUER_TOKEN}
+    networks:
+      default:
+        aliases:
+          - tarameteo-api
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1/healthz', timeout=2).status==200 else 1)"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+
   certbot:
     image: certbot/certbot:v5.2.2
     volumes:
@@ -27,13 +53,41 @@ services:
       timeout: 5s
       retries: 15
 
+  issuer:
+    build:
+      context: backend
+      args:
+        <<: *python-build-args
+    depends_on:
+      pki-init:
+        condition: service_completed_successfully
+    volumes:
+      - pki-root:/pki:ro
+    command: >
+      bash -c "uvicorn --host=0.0.0.0 --port=80 tarameteo.issuer:app --log-config=/app/log-config.yaml"
+    environment:
+      - ISSUER_TOKEN=${ISSUER_TOKEN}
+    networks:
+      default:
+        aliases:
+          - tarameteo-issuer
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1/healthz', timeout=2).status==200 else 1)"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+
   mosquitto:
     build: mosquitto
     depends_on:
       certbot:
         condition: service_healthy
+      pki-publish:
+        condition: service_completed_successfully
     volumes:
       - certbot-certs:/etc/letsencrypt:ro
+      - pki-trust:/etc/mosquitto/pki:ro
       - mosquitto-data:/mosquitto/data
       - ./mosquitto/mosquitto.tpl:/mosquitto.tpl
     environment:
@@ -49,6 +103,24 @@ services:
           - tarameteo-mosquitto
     restart: always
 
+  pki-init:
+    build: pki
+    volumes:
+      - pki-root:/pki
+    command: /init.sh
+    restart: "no"
+
+  pki-publish:
+    build: pki
+    depends_on:
+      pki-init:
+        condition: service_completed_successfully
+    volumes:
+      - pki-root:/pki:ro
+      - pki-trust:/trust
+    command: /publish.sh
+    restart: "no"
+
 networks:
   default:
     driver: bridge
@@ -61,3 +133,5 @@ volumes:
   certbot-certs:
   certbot-www:
   mosquitto-data:
+  pki-root:
+  pki-trust:
