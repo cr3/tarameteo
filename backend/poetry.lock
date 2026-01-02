@@ -1106,20 +1106,20 @@ tests-numpy = ["numpy", "pyhamcrest[tests]"]
 
 [[package]]
 name = "pytest"
-version = "8.4.2"
+version = "9.0.2"
 description = "pytest: simple powerful testing with Python"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["test"]
 files = [
-    {file = "pytest-8.4.2-py3-none-any.whl", hash = "sha256:872f880de3fc3a5bdc88a11b39c9710c3497a547cfa9320bc3c5e62fbf272e79"},
-    {file = "pytest-8.4.2.tar.gz", hash = "sha256:86c0d0b93306b961d58d62a4db4879f27fe25513d4b969df351abdddb3c30e01"},
+    {file = "pytest-9.0.2-py3-none-any.whl", hash = "sha256:711ffd45bf766d5264d487b917733b453d917afd2b0ad65223959f59089f875b"},
+    {file = "pytest-9.0.2.tar.gz", hash = "sha256:75186651a92bd89611d1d9fc20f0b4345fd827c41ccd5c299a868a05d70edf11"},
 ]
 
 [package.dependencies]
 colorama = {version = ">=0.4", markers = "sys_platform == \"win32\""}
-iniconfig = ">=1"
-packaging = ">=20"
+iniconfig = ">=1.0.1"
+packaging = ">=22"
 pluggy = ">=1.5,<2"
 pygments = ">=2.7.2"
 
@@ -1163,30 +1163,30 @@ pytest = ">=2.2"
 
 [[package]]
 name = "pytest-unique"
-version = "0.1.6"
+version = "0.1.7"
 description = "Pytest fixture to generate unique values."
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.10"
 groups = ["test"]
 files = [
-    {file = "pytest_unique-0.1.6-py3-none-any.whl", hash = "sha256:995208b9ca4a930361fb6b0a63f7d6e03a3b5e6e62a0e78fdab77b2785476eb8"},
-    {file = "pytest_unique-0.1.6.tar.gz", hash = "sha256:7897d281e8836d85365c7ce3989d98c00ad92704ec0e318e8bf51bf4138110d6"},
+    {file = "pytest_unique-0.1.7-py3-none-any.whl", hash = "sha256:b34eceb33590e14ad8db69b34c8534417f4bdf2c09845fc0e85ca720a7f2095c"},
+    {file = "pytest_unique-0.1.7.tar.gz", hash = "sha256:7e48682ca5635e356454af92617994cd037717dc4ab7d8fec2d7695902e3a65f"},
 ]
 
 [package.dependencies]
 attrs = ">=25.3.0,<26.0.0"
-pytest = ">=8.0.0,<9.0.0"
+pytest = ">=9.0.0,<10.0.0"
 
 [[package]]
 name = "pytest-xdocker"
-version = "0.2.6"
+version = "0.2.7"
 description = "Pytest fixture to run docker across test runs."
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.10"
 groups = ["test"]
 files = [
-    {file = "pytest_xdocker-0.2.6-py3-none-any.whl", hash = "sha256:66a4671991a88b6c4418e1b931e240e9770d7e02f5e5d2889cb68422cf2995ec"},
-    {file = "pytest_xdocker-0.2.6.tar.gz", hash = "sha256:b0cdac3424f6a0e7c75223a5d998c624c04b2aec9cb4b227e415139824fbc186"},
+    {file = "pytest_xdocker-0.2.7-py3-none-any.whl", hash = "sha256:9e235535e8207183f0e2f5b95776e31db6833658eb254b6601b6ab3c6d64e0db"},
+    {file = "pytest_xdocker-0.2.7.tar.gz", hash = "sha256:01dcde4420296ee0269fa6da3366a3fd7b15c708e264122b6b103b3bcfaba204"},
 ]
 
 [package.dependencies]
@@ -1194,7 +1194,7 @@ attrs = ">=25.3.0,<26.0.0"
 netifaces2 = ">=0.0.22,<1.0.0"
 psutil = ">=6.1.1,<7.0.0"
 pyhamcrest = ">=2.1.0,<3.0.0"
-pytest = ">=8.0.0,<9.0.0"
+pytest = ">=9.0.0,<10.0.0"
 pytest-cache = ">=1.0,<2.0"
 pytest-xprocess = ">=1.0.2,<2.0.0"
 
@@ -1861,4 +1861,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "164dd8df5da1c12c78ff43e9b304c18cfb94c8a10e4b7f55451c84797a5f9b3f"
+content-hash = "2d55ae90b27804b16e378c8cfed86b1f6dcee8d03c6cd98685db5a97779cf536"
